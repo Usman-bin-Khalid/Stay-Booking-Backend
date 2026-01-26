@@ -15,6 +15,18 @@ router.post('/register', async (req, res) => {
         name, email, password : hashedPassword
      });
       await user.save();
+      const profile = new Profile({user  : user._id,
+    bio : "",
+    phone : "",
+    gender : "",
+    dob : null,
+    avatar : "",
+    location : "",
+
+
+      });
+      await profile.save();
+      
     } catch (err) {
 
     }
