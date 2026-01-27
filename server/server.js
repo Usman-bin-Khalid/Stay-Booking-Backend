@@ -7,7 +7,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get('/', (req , res) => {
+app.get('/', (req, res) => {
     res.send('API is running...');
 });
 
@@ -21,6 +21,8 @@ mongoose.connect(process.env.MONGO_URI).then(() => {
     console.error('Error connecting to MongoDB', err);
 })
 
-app.listen(process.env.PORT, () => {
-    console.log('Server is running on port 5000');
+const PORT = process.env.PORT || 5001;
+
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 })
