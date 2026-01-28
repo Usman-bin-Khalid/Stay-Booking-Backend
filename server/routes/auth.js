@@ -6,6 +6,8 @@ const User = require('../models/User');
 const Profile = require('../models/Profile');
 
 
+
+
 router.post('/register', async (req, res) => {
     const {name, email, password} = req.body;
     try {
@@ -33,5 +35,7 @@ router.post('/register', async (req, res) => {
      res.status(500).json({message : "Server Error"});
     }
 })
+
+
 
 module.exports = router;
