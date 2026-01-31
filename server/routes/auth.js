@@ -37,35 +37,47 @@ router.post('/register', async (req, res) => {
 })
 
 
-router.post('/login', async (req , res) => {
-  const {email, password} = req.body;
-  const user = await User.findOne({
-    email
-  });
-  if(!user) return res.status(401).json({message : 'Invalid Credentials'});
-  const isMatch = await bcrypt.compare(password, user.password);
-  if(!isMatch) return res.status(401).json({message : 'Invalid Credentials'});
-  const existingProfile = await Profile.findOne({user : user._id});
-  if(!existingProfile) {
-    const profile = new Profile({user : user._id,
-   bio : "",
-   phone : "",
-   dob : null,
-   gender : "",
-   avatar : "",
-   location : "",
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
+    const user = await User.findOne({ email });
+    if (!user) return res.status(401).json({ message: 'Invalid Credentials' });
 
-    });
-    await profile.save();
-    const token = jwt.sign({id : user._id , isHost : user.isHost},
-      process.env.JWT_SECRET, {expiresIn : '1d'}
-    );
-    res.json({user : {id : user._id, name : user.name, email : user.email, isHost : user.isHost}});
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(401).json({ message: 'Invalid Credentials' });
+
+    // Check if profile exists
+    let profile = await Profile.findOne({ user: user._id });
     
+    if (!profile) {
+      profile = new Profile({
+        user: user._id,
+        bio: "",
+        phone: "",
+        gender: "",
+        avatar: "",
+        location: ""
+        // Removed dob: null in case your Schema expects a specific Date format
+      });
+      await profile.save();
+    }
+
+    const token = jwt.sign(
+      { id: user._id, isHost: user.isHost },
+      process.env.JWT_SECRET,
+      { expiresIn: '1d' }
+    );
+
+    return res.json({
+      token,
+      user: { id: user._id, name: user.name, email: user.email, isHost: user.isHost }
+    });
+
+  } catch (err) {
+    console.error("Login Error:", err); // This will tell us the REAL reason it fails
+    res.status(500).send('Server Error');
   }
-
-})
-
+});
 
 module.exports = router;
