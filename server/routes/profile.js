@@ -3,7 +3,7 @@ const router = express.Router();
 const Profile = require('../models/Profile');
 const auth = require('../middleware/auth');
 
-
+// Get Profile
 router.get('/' , auth, async (req, res) => {
     try { 
      const profile = await Profile.findOne({user : req.user.id});
@@ -14,7 +14,7 @@ router.get('/' , auth, async (req, res) => {
     }
 })
 
-
+// Create Profile
 router.post('/', auth, async (req, res) => {
   try {
     const profileData = {...req.body, user : req.user.id}
@@ -27,6 +27,22 @@ router.post('/', auth, async (req, res) => {
   } catch(err) {
     res.status(500).json({message : 'Server Error', err});
   }
+})
+
+
+// Update Profile
+router.put('/' , auth, async (req, res) => {
+    try {
+      const updateProfile = await Profile.findOneAndUpdate(
+        {user : req.user.id},
+        {$set : req.body},
+         {new : true}
+      );
+      if (!updateProfile) return res.status(404).json({message : 'Profile not found'});
+      res.json(updateProfile);
+    } catch (err) {
+       res.status(500).json({message : 'Server Error' , err});
+    }
 })
 
 module.exports = router;
