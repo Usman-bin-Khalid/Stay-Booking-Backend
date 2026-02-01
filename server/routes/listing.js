@@ -14,9 +14,10 @@ router.get('/', async (req , res) => {
      if (minPrice) filter.price.$gte = +minPrice;
      if(maxPrice) filter.price.$lte = +maxPrice;
     
-     const listings = await Listing.find(fiilter);
+     const listings = await Listing.find(filter);
+     res.json(listings);
       
     } catch (err) {
-
+      res.status(500).json({message : "Error fetching listings"}) 
     }
 })
