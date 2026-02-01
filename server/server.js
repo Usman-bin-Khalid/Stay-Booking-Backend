@@ -14,6 +14,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/profile', profileRoutes);
+app.use('/api/listing' , listtintRoutes);
 
 mongoose.connect(process.env.MONGO_URI).then(() => {
     console.log('Connected to MongoDB');
