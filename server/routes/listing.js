@@ -46,3 +46,24 @@ router.post('/', auth, async (req, res) => {
    res.status(500).json({message : "Error creating listings"});
   }
 });
+
+
+// Put by Host
+router.put("/:id" , auth, async (req, res) => {
+  try {
+    const listing = await Listing.findById(req.params.id);
+    if(!listing) return res.status(404).json({message : 'Listing not found'});
+    if(listing.hostId.toString() !== req.user.id) {
+      return res.status(403).json({messaage : "Unauthorized"});
+    }
+
+    const updated = await Listing.findByIdAndUpdate(req.params.id , req.body, {
+      new : true
+    });
+    res.json(updated);
+  } catch (err) {
+   res.status(500).json({message : 'Error updating listing'});
+  }
+})
+
+// Delete Listing by Host
