@@ -33,3 +33,16 @@ router.get('/:id' , async (req, res) => {
    res.status(500).json({message : 'Error Fetching Listing'});
   }
 })
+
+// Post Listings by Host
+router.post('/', auth, async (req, res) => {
+  try {
+   if (!req.user.isHost) {
+    return res.status(403).json({message : 'Only host can add listings'});
+   }
+   const listing = new Listing({...req.body , hostId : req.user.id});
+   await listing.save();
+  } catch (err) {
+   res.status(500).json({message : "Error creating listings"});
+  }
+});
