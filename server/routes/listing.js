@@ -66,4 +66,18 @@ router.put("/:id" , auth, async (req, res) => {
   }
 })
 
+
 // Delete Listing by Host
+router.delete('/:id' , auth, async (req, res) => {
+ try {
+    const listing = await Listing.findById(req.params.id);
+  if(!listing) return res.status(404).json({message : "Listing not found"});
+  if(listing.hostId.toString() !== req.user.id) {
+    return res.status(403).json({message : "Unauthorized"});
+  }
+  await listing.deleteOne();
+  res.json({message : "Deleted Successfully"});
+ } catch (err) {
+   res.status(500).json({message : "Error in deleting listings"});
+ }
+})
