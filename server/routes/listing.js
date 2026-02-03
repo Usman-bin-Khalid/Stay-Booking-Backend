@@ -23,6 +23,23 @@ router.get('/', async (req , res) => {
 })
 
 
+// Del
+router.get('/', async (req, res) => {
+  try {
+    const {location, minPrice, maxPrice} = req.query;
+    const filter = {};
+    if(location) filter.location = {$regex : location, $options : 'i'}
+    if(minPrice || maxPrice) filter.price = {};
+    if(minPrice) filter.price.$gte = +minPrice;
+    if(maxPrice) filter.price.$lte = +maxPrice;
+    const listings = await Listing.find(filter);
+    res.json(listings);
+  } catch (err) {
+
+  }
+})
+
+
 // Get Listings by Id
 router.get('/:id' , async (req, res) => {
   try {
@@ -42,6 +59,7 @@ router.post('/', auth, async (req, res) => {
    }
    const listing = new Listing({...req.body , hostId : req.user.id});
    await listing.save();
+   res.status(201).json(listing);
   } catch (err) {
    res.status(500).json({message : "Error creating listings"});
   }
@@ -81,3 +99,18 @@ router.delete('/:id' , auth, async (req, res) => {
    res.status(500).json({message : "Error in deleting listings"});
  }
 })
+
+// My Booking
+router.get('/my-listings' , auth , async (req, res) => {
+  try {
+   if(!req.user.isHost) {
+    return res.status(403).json({message : 'Only host can view their listings'});
+   }
+   const listing = await Listing.find({hostId : req.user.id});
+   res.json(listing);
+  } catch (err) {
+    res.status(500).json({message : 'Error in fetching the listing'});
+  }
+})
+
+module.exports = router;
