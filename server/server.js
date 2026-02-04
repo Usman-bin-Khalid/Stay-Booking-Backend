@@ -16,7 +16,7 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/listing' , listingRoutes);
-
+app.use('/api/bookings', bookingRoutes)
 mongoose.connect(process.env.MONGO_URI).then(() => {
     console.log('Connected to MongoDB');
 }).catch((err) => {
