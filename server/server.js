@@ -5,6 +5,7 @@ require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const profileRoutes = require('./routes/profile');
 const listingRoutes = require('./routes/listing');
+const bookingRoutes = require('./routes/bookings');
 const app = express();
 app.use(cors());
 app.use(express.json());

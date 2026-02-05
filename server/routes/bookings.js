@@ -20,3 +20,17 @@ router.post('/', auth, async (req, res) => {
     }
 })
 
+
+
+router.get('/my-bookings' , auth, async (req, res) => {
+    try  {
+     const bookings = await Booking.find({userId : req.user.id}).populate("listingId");
+     res.json(bookings);
+
+    } catch (err) {
+
+    }
+})
+
+module.exports = router;
+
