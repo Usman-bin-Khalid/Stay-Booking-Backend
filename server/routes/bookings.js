@@ -42,7 +42,23 @@ router.get('/:id' , auth, async (req, res) => {
  } catch (err) {
    res.status(500).json({message : "Server Error"});
  }
-})
+});
 
+// Update the booking
+
+router.put('/:id' ,auth,  async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id);
+    if(!booking) return res.status(404).json({message : "Booking not found"});
+    if (booking.userId.toString() !== req.user.id) return res.status(403).json({message : "Unauthorized"});
+    const {checkIn, checkOut} = req.body;
+    booking.checkIn = checkIn || booking.checkIn;
+    booking.checkOut = checkOut || booking.checkOut;
+    await booking.save();
+    res.json(booking); 
+  } catch (err) {
+     res.status(500).json({message : "Error Updating Booking"});
+  }
+})
 module.exports = router;
 
