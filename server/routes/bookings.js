@@ -60,5 +60,19 @@ router.put('/:id' ,auth,  async (req, res) => {
      res.status(500).json({message : "Error Updating Booking"});
   }
 })
+
+
+// Delete Booking API
+router.delete('/:id' , auth , async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id);
+    if(!booking) return res.status(404).json({message : "Booking Not Found"});
+    if (booking.userId.toString() !== req.user.id) return res.status(403).json({message : "Unauthorized"});
+    await Booking.deleteOne();
+    res.json({message : "Booking Deleted Successfully"});
+  } catch (err) {
+   res.status(500).json({message : "Error Deleting Booking"});
+  }
+})
 module.exports = router;
 
