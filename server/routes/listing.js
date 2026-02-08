@@ -8,6 +8,7 @@ const auth = require('../middleware/auth')
 router.get('/', async (req , res) => {
     try {
      const {location, minPrice, maxPrice} = req.query;
+     // req.query ka mtlb hy k hum params waly tab mai query parameters mai data pass kryn gai
      const filter = {};
      if (location) filter.location = {$regex : location , $options : 'i' }
      if(minPrice || maxPrice) filter.price = {};
@@ -25,19 +26,14 @@ router.get('/', async (req , res) => {
 
 
 
-// Del
-router.get('/', async (req, res) => {
-  try {
-    const {location, minPrice, maxPrice} = req.query;
-    const filter = {};
-    if(location) filter.location = {$regex : location, $options : 'i'}
-    if(minPrice || maxPrice) filter.price = {};
-    if(minPrice) filter.price.$gte = +minPrice;
-    if(maxPrice) filter.price.$lte = +maxPrice;
-    const listings = await Listing.find(filter);
-    res.json(listings);
-  } catch (err) {
 
+router.get('/', async (req, res) => {
+  try { 
+   const {location, minPrice, maxPrice} = req.query;
+   const filter = {};
+   if(location) filter.location = {$regex : location, $options : 'i'}
+  } catch (err) {
+    res.status(500).json({message : "Error fetching listings"});
   }
 })
 

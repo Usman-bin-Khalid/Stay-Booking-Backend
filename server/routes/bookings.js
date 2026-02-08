@@ -21,6 +21,7 @@ router.post('/', auth, async (req, res) => {
 })
 
 
+
 // Get All Bookings
 router.get('/my-bookings' , auth, async (req, res) => {
     try  {
@@ -31,6 +32,7 @@ router.get('/my-bookings' , auth, async (req, res) => {
       res.status(500).json({message : "Error Fetching Bookings"});
     }
 })
+
 
 // Get a Single booking by there id
 router.get('/:id' , auth, async (req, res) => {
@@ -43,6 +45,8 @@ router.get('/:id' , auth, async (req, res) => {
    res.status(500).json({message : "Server Error"});
  }
 });
+
+
 
 // Update the booking
 
