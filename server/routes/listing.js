@@ -25,19 +25,6 @@ router.get('/', async (req , res) => {
 
 
 
-
-
-router.get('/', async (req, res) => {
-  try { 
-   const {location, minPrice, maxPrice} = req.query;
-   const filter = {};
-   if(location) filter.location = {$regex : location, $options : 'i'}
-  } catch (err) {
-    res.status(500).json({message : "Error fetching listings"});
-  }
-})
-
-
 // Get Listings by Id
 router.get('/:id' , async (req, res) => {
   try {
@@ -55,6 +42,8 @@ router.post('/', auth, async (req, res) => {
    if (!req.user.isHost) {
     return res.status(403).json({message : 'Only host can add listings'});
    }
+
+   //In the world of coding, we call this Mass Assignment (the ...req.body way) versus Manual Assignment (the "one by one" way).
    const listing = new Listing({...req.body , hostId : req.user.id});
    await listing.save();
    res.status(201).json(listing);
