@@ -3,10 +3,10 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-const authRoutes = require('../routes/auth');
-const profileRoutes = require('../routes/profile');
-const listingRoutes = require('../routes/listing');
-const bookingRoutes = require('../routes/bookings');
+const authRoutes = require('./routes/auth');
+const profileRoutes = require('./routes/profile');
+const listingRoutes = require('./routes/listing');
+const bookingRoutes = require('./routes/bookings');
 
 const app = express();
 
@@ -22,10 +22,21 @@ app.use('/api/profile', profileRoutes);
 app.use('/api/listing', listingRoutes);
 app.use('/api/bookings', bookingRoutes);
 
-// MongoDB connection (safe for Vercel)
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error(err));
+// MongoDB (serverless-safe)
+let isConnected = false;
 
-// ✅ EXPORT — DO NOT LISTEN
+const connectDB = async () => {
+  if (isConnected) return;
+
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    isConnected = true;
+    console.log('MongoDB connected');
+  } catch (err) {
+    console.error('MongoDB connection error:', err);
+  }
+};
+
+connectDB();
+
 module.exports = app;
