@@ -22,21 +22,50 @@ app.use('/api/profile', profileRoutes);
 app.use('/api/listing', listingRoutes);
 app.use('/api/bookings', bookingRoutes);
 
-// MongoDB (serverless-safe)
+// MongoDB Connection (Serverless-safe)
 let isConnected = false;
 
 const connectDB = async () => {
-  if (isConnected) return;
+  if (isConnected) {
+    console.log('Using existing MongoDB connection');
+    return;
+  }
 
   try {
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect(process.env.MONGO_URI, {
+      bufferCommands: false,
+      serverSelectionTimeoutMS: 5000,
+      connectTimeoutMS: 10000,
+      maxPoolSize: 10,
+      minPoolSize: 2,
+    });
     isConnected = true;
     console.log('MongoDB connected');
   } catch (err) {
     console.error('MongoDB connection error:', err);
+    isConnected = false;
+    throw err;
   }
 };
 
-connectDB();
+// Ensure connection on first request
+app.use(async (req, res, next) => {
+  if (!isConnected) {
+    try {
+      await connectDB();
+    } catch (err) {
+      return res.status(500).json({ error: 'Database connection failed' });
+    }
+  }
+  next();
+});
+
+// Start server locally (for testing)
+const PORT = process.env.PORT || 5000;
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
 
 module.exports = app;
